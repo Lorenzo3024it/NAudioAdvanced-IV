@@ -25,15 +25,21 @@ Example (in VB.NET):
 To play the sound you can use these functions:
 
  Play(Volume, Loop, StartTime) -> Play "frontend".
+
  Play(Position, MaxDistance, Loop, StartTime, RealTimeVolumeControl) -> Play from a position in the game world.
+
  Play(Ped, MaxDistance, Loop, StartTime, RealTimeVolumeControl) -> Play from ped.
+
  Play(Object, MaxDistance, Loop, StartTime, RealTimeVolumeControl) -> Play from object.
+
  Play(Vehicle, MaxDistance, Loop, StartTime, RealTimeVolumeControl) -> Play from vehicle.
+
  
 
 Otherwise you can trigger a sound "one-shot" using these functions:
 
  Trigger(Volume, Loop, StartTime) -> Play "fronted"
+
  Trigger(Position, MaxDistance, Loop, StartTime) -> Play from a position in the game world. 
 						    The volume/panning will be set before triggering the sound, 
 						    then they wont be changed.
@@ -52,3 +58,4 @@ Remember to add NAudio.dll and NativeExtended-IV.dll to project's reference and 
 
 
 If you need help or you want to cooperate please contact me :)
+
