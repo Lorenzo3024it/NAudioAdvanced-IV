@@ -8,6 +8,7 @@ inside main script.
 
 
 Current Version: 1.0.0
+
 The current version is based on NAudio v. 2.2.1. You will find the required NAudio DLLs inside the package, 
 according to the license (you can check License NAudio.md file).
 
@@ -48,5 +49,6 @@ The library provides also an automatic logging system, which will be write error
  
 
 Remember to add NAudio.dll and NativeExtended-IV.dll to project's reference and then put it inside GTA IV folder.
+
 
 If you need help or you want to cooperate please contact me :)
