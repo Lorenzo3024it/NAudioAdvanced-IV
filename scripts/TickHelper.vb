@@ -13,7 +13,7 @@
     ''' Process loops, real time volume control and direction and fade in/out.
     ''' Must be called in a Tick (suggested 1 to 10 ms interval).
     ''' </summary>
-    Public Sub ProcessAll()
+    Public Shared Sub ProcessAll()
         If _TickActions.Count = 0 Then
             Exit Sub
         End If

@@ -7,8 +7,6 @@ automatically updated for moving entities (vehicles, peds or objects) by calling
 inside main script.
 
 
-Current Version: 1.0.1
-
 The current version is based on NAudio v. 2.2.1. You will find the required NAudio DLLs inside the package, 
 according to the license (you can check License NAudio.md file).
 
@@ -33,8 +31,8 @@ To play the sound you can use these functions:
  Play(Object, MaxDistance, Loop, StartTime, RealTimeVolumeControl) -> Play from object.
 
  Play(Vehicle, MaxDistance, Loop, StartTime, RealTimeVolumeControl) -> Play from vehicle.
-
  
+
 
 Otherwise you can trigger a sound "one-shot" using these functions:
 
