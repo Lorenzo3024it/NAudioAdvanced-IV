@@ -7,7 +7,7 @@ automatically updated for moving entities (vehicles, peds or objects) by calling
 inside main script.
 
 
-Current Version: 1.0.0
+Current Version: 1.0.1
 
 The current version is based on NAudio v. 2.2.1. You will find the required NAudio DLLs inside the package, 
 according to the license (you can check License NAudio.md file).
