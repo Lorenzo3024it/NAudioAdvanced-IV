@@ -101,7 +101,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="scripts\NAudioAdvanced.vb" />
+    <Compile Include="scripts\API - Sound.vb" />
     <Compile Include="scripts\TickHelper.vb" />
     <Compile Include="scripts\Tools.vb" />
   </ItemGroup>

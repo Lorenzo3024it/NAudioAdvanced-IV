@@ -8,11 +8,11 @@ Imports System.Runtime.InteropServices
 
 ' Controllare i valori degli attributi degli assembly
 
-<Assembly: AssemblyTitle("NAudioAdvanced")>
+<Assembly: AssemblyTitle("NAudioAdvanced IV")>
 <Assembly: AssemblyDescription("An NAudio plugin to implement some functions.")>
 <Assembly: AssemblyCompany("")>
-<Assembly: AssemblyProduct("NAudioAdvanced")>
-<Assembly: AssemblyCopyright("©2025 Lorenzo3024it")>
+<Assembly: AssemblyProduct("NAudioAdvanced IV")>
+<Assembly: AssemblyCopyright("©2026 Lorenzo3024it")>
 <Assembly: AssemblyTrademark("")>
 
 <Assembly: ComVisible(False)>
@@ -28,5 +28,5 @@ Imports System.Runtime.InteropServices
 '      Revisione
 '
 
-<Assembly: AssemblyVersion("1.0.0")>
-<Assembly: AssemblyFileVersion("1.0.0")>
+<Assembly: AssemblyVersion("1.1.0")>
+<Assembly: AssemblyFileVersion("1.1.0")>

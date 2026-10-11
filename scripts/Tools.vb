@@ -1,38 +1,55 @@
 ﻿Imports System.IO
+Imports System.Reflection
 Imports GTA
 Imports GTA.Native.Function
 Imports NAudio.Wave
 
-Public NotInheritable Class Tools
-    'Log Writing
-    Private Shared ReadOnly FilePath As String = "NAudioAdvanced-IV.log"
+Friend NotInheritable Class Tools
+    Private Sub New() : End Sub
+    Private Shared ReadOnly LogFile As String = "NAudioAdvanced-IV.log"
     Friend Shared _hasWrittenWelcomeMessage As Boolean = False
     Private Shared _firstClean As Boolean = False
     Private Shared _isWriting As Boolean = False
+    Private Shared _gamePath As String
+    Public Shared ReadOnly Property GamePath As String
+        Get
+            If String.IsNullOrEmpty(_gamePath) Then
+                _gamePath = GamePathResolver.ResolveGamePath()
+            End If
 
-    'Friend Shared CamPoint As New Native.Pointer(GetType(Integer))
-    'Friend Shared CamPosPoint1 As New Native.Pointer(GetType(Single))
-    'Friend Shared CamPosPoint2 As New Native.Pointer(GetType(Single))
-    'Friend Shared CamPosPoint3 As New Native.Pointer(GetType(Single))
-    'Friend Shared CamDirPoint1 As New Native.Pointer(GetType(Single))
-    'Friend Shared CamDirPoint2 As New Native.Pointer(GetType(Single))
-    'Friend Shared CamDirPoint3 As New Native.Pointer(GetType(Single))
-    ''-----------------------------------------------------------------------
-    'Public Shared Function GetCurrentCamera() As Integer
-    '    [Call]("GET_GAME_CAM", CamPoint)
-    '    Return CamPoint.Value
-    'End Function
-    'Public Shared Function GetCurrentCameraPosition() As Vector3
-    '    [Call]("GET_CAM_POS", GetCurrentCamera, CamPosPoint1, CamPosPoint2, CamPosPoint3)
-    '    Return New Vector3(CamPosPoint1.Value, CamPosPoint2.Value, CamPosPoint3.Value)
-    'End Function
-    'Public Shared Function GetCurrentCameraDirection() As Vector3
-    '    [Call]("GET_CAM_POS", GetCurrentCamera, CamDirPoint1, CamDirPoint2, CamDirPoint3)
-    '    Return New Vector3(CamDirPoint1.Value, CamDirPoint2.Value, CamDirPoint3.Value)
-    'End Function
-    Friend Shared Sub WriteLog(Message As String, Optional WriteDateAndTime As Boolean = False, Optional OverwriteFile As Boolean = False)
+            Return _gamePath
+        End Get
+    End Property
+    Friend Shared Function ResolveGamePath() As String
         Try
-            ' Evita chiamate ricorsive o doppie scritture
+            Dim asm As Assembly = Assembly.GetAssembly(GetType(GamePathResolver))
+            If asm Is Nothing Then
+                Tools.WriteLog("Error in NAudioAdvanced....ResolveGamePath (Assembly.GetAssembly).")
+                Return String.Empty
+            End If
+            Dim location As String = asm.Location
+            If String.IsNullOrEmpty(location) Then
+                Tools.WriteLog("Error in NAudioAdvanced....ResolveGamePath: Assembly location is empty.")
+                Return String.Empty
+            End If
+            Return Path.GetDirectoryName(location)
+        Catch ex As Exception
+            Tools.WriteLog("Error in NAudioAdvanced....ResolveGamePath.", ex)
+            Return String.Empty
+        End Try
+    End Function
+    Friend Shared Function ClampInteger(Value As Integer, Min As Integer, Max As Integer) As Integer
+        If Value < Min Then Return Min
+        If Value > Max Then Return Max
+        Return Value
+    End Function
+    Friend Shared Function ClampFloat(Value As Single, Min As Single, Max As Single) As Single
+        If Value < Min Then Return Min
+        If Value > Max Then Return Max
+        Return Value
+    End Function
+    Friend Shared Sub WriteLog(Message As String, Optional WriteDateAndTime As Boolean = False)
+        Try
             If _isWriting Then Return
             _isWriting = True
 
@@ -40,19 +57,10 @@ Public NotInheritable Class Tools
                 WriteWelcomeMessage()
                 _firstClean = True
             End If
+            Dim completeLogPath As String = Path.Combine(GamePath, LogFile)
 
-            Dim completeLogPath As String = Game.InstallFolder & "\" & FilePath
 
-            Dim overwrite As Boolean
-            If OverwriteFile Then
-                overwrite = True
-                _firstClean = True
-            Else
-                overwrite = Not _firstClean
-                _firstClean = True
-            End If
-
-            Using sw As New StreamWriter(completeLogPath, Not OverwriteFile)
+            Using sw As New StreamWriter(completeLogPath, True)
                 If WriteDateAndTime Then
                     sw.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] {Message}")
                 Else
@@ -66,7 +74,7 @@ Public NotInheritable Class Tools
             _isWriting = False
         End Try
     End Sub
-    Friend Shared Sub WriteLogAdvanced(Message As String, Exception As Exception, Optional OverwriteFile As Boolean = False)
+    Friend Shared Sub WriteLog(Message As String, Exception As Exception)
         Try
             If _isWriting Then Return
             _isWriting = True
@@ -75,18 +83,9 @@ Public NotInheritable Class Tools
                 WriteWelcomeMessage()
                 _firstClean = True
             End If
-            Dim completeLogPath As String = Game.InstallFolder & "\" & FilePath
+            Dim completeLogPath As String = Path.Combine(GamePath, LogFile)
 
-            Dim overwrite As Boolean
-            If OverwriteFile Then
-                overwrite = True
-                _firstClean = True
-            Else
-                overwrite = Not _firstClean
-                _firstClean = True
-            End If
-
-            Using sw As New StreamWriter(completeLogPath, Not overwrite)
+            Using sw As New StreamWriter(completeLogPath, True)
                 sw.WriteLine("[" & DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") & "]")
                 If Not String.IsNullOrEmpty(Message) Then sw.WriteLine(Message)
                 WriteExceptionRecursive(Exception, sw)
@@ -114,35 +113,53 @@ Public NotInheritable Class Tools
         End Try
     End Sub
     Friend Shared Sub WriteWelcomeMessage()
-        If _hasWrittenWelcomeMessage = False Then
-            Try
-                Dim logPath As String = Game.InstallFolder & "\" & FilePath
-                Using sw As New StreamWriter(logPath, False)
-                    WriteLog("   ___________________________________________________________", False, True)
-                    WriteLog(" _/===========================================================\_")
-                    WriteLog("| ---------  NAudio Advanced IV 1.0 by Lorenzo3024it  --------- |")
-                    WriteLog("| -----------     Thank you for using my mods :)    ----------- |")
-                    WriteLog("| -------      If you need help please contact me       ------- |")
-                    WriteLog("| ---  bttf4thebigrelase@gmail.com / lorenzo3024@hotmail.it --- |")
-                    WriteLog("=================================================================")
-                    WriteLog("")
-                    WriteLog("NAudioAdvanced-IV initialized!", True)
-                End Using
-                _hasWrittenWelcomeMessage = True
-            Catch
+        If _hasWrittenWelcomeMessage Then Return
 
-            End Try
-        End If
+        Try
+            Dim logPath As String = System.IO.Path.Combine(GamePath, LogFile)
+            Using sw As New StreamWriter(logPath, False)
+                sw.WriteLine("   ___________________________________________________________")
+                sw.WriteLine(" _/===========================================================\_")
+                sw.WriteLine("| ---------  NAudio Advanced IV 1.0 by Lorenzo3024it  --------- |")
+                sw.WriteLine("| -----------     Thank you for using my mods :)    ----------- |")
+                sw.WriteLine("| -------      If you need help please contact me       ------- |")
+                sw.WriteLine("| ---  bttf4thebigrelase@gmail.com / lorenzo3024@hotmail.it --- |")
+                sw.WriteLine("=================================================================")
+                sw.WriteLine()
+                sw.WriteLine("[" & DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") & "] NAudioAdvanced-IV initialized!")
+            End Using
+            _hasWrittenWelcomeMessage = True
+            _firstClean = True
+        Catch
+
+        End Try
     End Sub
-    '--------------------------------------------------------------------------------------------------------------------
-    Public Class AdvancedAudioTools
-        Public ReadOnly Property Reader As AudioFileReader
-        Public ReadOnly Property WaveChannel As WaveChannel32
-        Public ReadOnly Property OutputDevice As DirectSoundOut
-        Public Sub New(Reader As AudioFileReader, WC As WaveChannel32, DSO As DirectSoundOut)
-            Me.Reader = Reader
-            WaveChannel = WC
-            OutputDevice = DSO
-        End Sub
+
+
+    Friend NotInheritable Class GamePathResolver
+        Private Sub New() : End Sub
+        Friend Shared Function ResolveGamePath() As String
+            Try
+                Dim asm As Assembly = Assembly.GetAssembly(GetType(GamePathResolver))
+
+                If asm Is Nothing Then
+                    ' DEBUG: NativeExtended assembly could not be resolved
+                    Return String.Empty
+                End If
+
+                Dim location As String = asm.Location
+
+                If String.IsNullOrEmpty(location) Then
+                    ' DEBUG: NativeExtended assembly location is empty
+                    Return String.Empty
+                End If
+
+                Return Path.GetDirectoryName(location)
+
+            Catch ex As Exception
+                ' DEBUG: Exception while resolving game path
+                Return String.Empty
+            End Try
+        End Function
     End Class
 End Class
